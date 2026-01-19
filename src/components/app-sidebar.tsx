@@ -1,7 +1,3 @@
-"use client";
-
-import type * as React from "react";
-
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import {
@@ -13,18 +9,27 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { auth } from "@/server/auth";
+import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
+import type * as React from "react";
 
-const data = {
-  user: {
-    name: "asdf",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-};
+export async function AppSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const data = {
+    user: {
+      name: session?.user?.name ?? "",
+      email: session?.user?.email ?? "",
+      avatar: session?.user?.image ?? "",
+    },
+  };
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>

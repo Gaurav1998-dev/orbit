@@ -130,14 +130,22 @@ function PostsList({ title, posts }: { title: string; posts: Post[] }) {
           posts.map((post) => (
             <div key={post.id} className="border-b pb-4 last:border-0">
               <p className="text-sm mb-2">{post.text}</p>
-              <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-                <span>❤️ {(post.likeCount ?? 0).toLocaleString()}</span>
-                <span>🔁 {(post.retweetCount ?? 0).toLocaleString()}</span>
-                <span>💬 {(post.replyCount ?? 0).toLocaleString()}</span>
-                <span>🔖 {(post.bookmarkCount ?? 0).toLocaleString()}</span>
-                <span>👁️ {(post.impressionCount ?? 0).toLocaleString()}</span>
-                <span>📊 {(post.engagementScore * 100).toFixed(2)}%</span>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground mt-1">
+                <span>❤️ {(post.likeCount ?? 0).toLocaleString()} likes</span>
+                <span>🔁 {(post.retweetCount ?? 0).toLocaleString()} reposts</span>
+                <span>💬 {(post.replyCount ?? 0).toLocaleString()} replies</span>
+                <span>🔖 {(post.bookmarkCount ?? 0).toLocaleString()} bookmarks</span>
+                <span>👁️ {(post.impressionCount ?? 0).toLocaleString()} views</span>
+                <span>📊 {(post.engagementScore * 100).toFixed(2)}% engagement</span>
               </div>
+              <a
+                href={`https://x.com/i/web/status/${post.xPostId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-blue-500 hover:text-blue-600 hover:underline mt-2 inline-block"
+              >
+                View on X ↗
+              </a>
             </div>
           ))
         )}

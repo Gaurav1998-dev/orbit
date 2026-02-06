@@ -37,7 +37,10 @@ export const xAnalysisRouter = router({
           const xUserData = await verifyXUsername(xUsername);
 
           if (!xUserData?.id) {
-            return null;
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Invalid X username",
+            });
           }
 
           /**

@@ -11,7 +11,7 @@ const faqItems = [
   {
     question: "How does the analysis work?",
     answer:
-      "When you run an analysis, we fetch recent posts from the target X handle and rank them by engagement score. The top 5 and bottom 5 posts are then sent to an AI model which compares them side-by-side — identifying what the best content does well and what the underperforming content is missing. You get actionable insights on themes, writing style, and engagement patterns.",
+      "When you run an analysis, we fetch recent posts from the target X handle(s) and rank them by engagement score. The top 5 and bottom 5 posts are then analyzed by Claude Opus 4.5 which compares them side-by-side — identifying what the best content does well and what the underperforming content is missing. You get actionable insights on themes, writing style, and engagement patterns.",
   },
   {
     question: "How is the engagement score calculated?",

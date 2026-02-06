@@ -1,5 +1,6 @@
 import { NavAnalyses } from "@/components/nav-analyses";
 import { NavMain } from "@/components/nav-main";
+import { NavPromptSettings } from "@/components/nav-prompt-settings";
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
@@ -59,6 +60,7 @@ export async function AppSidebar({
         <NavAnalyses />
       </SidebarContent>
       <SidebarFooter>
+        <NavPromptSettings />
         <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>

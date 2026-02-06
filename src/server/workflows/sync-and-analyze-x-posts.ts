@@ -30,6 +30,7 @@ export async function syncAndAnalyzeXPosts(
   xUserRecordXUserId: string,
   analysisRecordId: string,
   maxPosts: number = 100,
+  customPrompt?: string | null,
 ) {
   "use workflow";
 
@@ -38,7 +39,7 @@ export async function syncAndAnalyzeXPosts(
     xUserRecordXUserId,
     maxPosts,
   );
-  await analyzeXPosts(recentXUserPostRecords ?? [], analysisRecordId);
+  await analyzeXPosts(recentXUserPostRecords ?? [], analysisRecordId, customPrompt);
 }
 
 async function syncXUserPosts(
@@ -140,6 +141,7 @@ async function syncXUserPosts(
 async function analyzeXPosts(
   recentXUserPostRecords: XPostRecord[],
   analysisRecordId: string,
+  customPrompt?: string | null,
 ) {
   "use step";
 
@@ -155,6 +157,7 @@ async function analyzeXPosts(
   const postsAnalysis = await analyzeXPostsWithAI(
     top5XPostRecords,
     bottom5XPostRecords,
+    customPrompt,
   );
 
   await db

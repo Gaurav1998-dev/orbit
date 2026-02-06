@@ -1,10 +1,12 @@
 import { db } from "@/db";
 import { analysis } from "@/db/analysis-schema";
+import { user } from "@/db/auth-schema";
 import { xUser } from "@/db/x-schema";
 import { protectedProcedure, router } from "@/server/trpc";
 import { syncAndAnalyzeXPosts } from "@/server/workflows/sync-and-analyze-x-posts";
 import { verifyXUsername } from "@/server/x";
 import { TRPCError } from "@trpc/server";
+import { eq } from "drizzle-orm";
 import { start } from "workflow/api";
 import { z } from "zod";
 
@@ -22,6 +24,14 @@ export const xAnalysisRouter = router({
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      // Fetch user's custom analysis prompt
+      const [userRecord] = await db
+        .select({ analysisPrompt: user.analysisPrompt })
+        .from(user)
+        .where(eq(user.id, ctx.session.user.id));
+
+      const customPrompt = userRecord?.analysisPrompt ?? null;
+
       const analysisRecordIds = await Promise.all(
         input.xUsernames.map(async (xUsername) => {
           const xUserData = await verifyXUsername(xUsername);
@@ -68,6 +78,7 @@ export const xAnalysisRouter = router({
             xUserRecord.xUserId,
             insertedAnalysisRecord.id,
             input.maxPosts,
+            customPrompt,
           ]);
 
           return insertedAnalysisRecord.id;

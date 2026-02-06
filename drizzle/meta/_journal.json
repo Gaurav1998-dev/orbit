@@ -64,6 +64,13 @@
       "when": 1770362706538,
       "tag": "0008_useful_ben_urich",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1770363989267,
+      "tag": "0009_add-analysis-prompt",
+      "breakpoints": true
     }
   ]
 }

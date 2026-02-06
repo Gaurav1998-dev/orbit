@@ -29,12 +29,14 @@ export async function syncAndAnalyzeXPosts(
   xUserRecordId: string,
   xUserRecordXUserId: string,
   analysisRecordId: string,
+  maxPosts: number = 100,
 ) {
   "use workflow";
 
   const recentXUserPostRecords = await syncXUserPosts(
     xUserRecordId,
     xUserRecordXUserId,
+    maxPosts,
   );
   await analyzeXPosts(recentXUserPostRecords ?? [], analysisRecordId);
 }
@@ -42,6 +44,7 @@ export async function syncAndAnalyzeXPosts(
 async function syncXUserPosts(
   xUserRecordId: string,
   xUserRecordXUserId: string,
+  maxPosts: number = 100,
 ) {
   "use step";
 
@@ -49,7 +52,7 @@ async function syncXUserPosts(
    * Fetch posts via X API v2
    */
   const params = new URLSearchParams({
-    max_results: "15",
+    max_results: String(Math.min(100, Math.max(5, maxPosts))),
     exclude: "replies,retweets",
     "tweet.fields": "public_metrics,created_at,in_reply_to_user_id",
   });

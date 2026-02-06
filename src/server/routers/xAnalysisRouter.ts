@@ -15,13 +15,18 @@ export type XUserAnalysisMap = {
 
 export const xAnalysisRouter = router({
   run: protectedProcedure
-    .input(z.object({ xUsernames: z.array(z.string()) }))
+    .input(
+      z.object({
+        xUsernames: z.array(z.string()),
+        maxPosts: z.number().min(1).max(100).default(100),
+      }),
+    )
     .mutation(async ({ input, ctx }) => {
       const analysisRecordIds = await Promise.all(
         input.xUsernames.map(async (xUsername) => {
-          const verifiedXUserResponse = await verifyXUsername(xUsername);
+          const xUserData = await verifyXUsername(xUsername);
 
-          if (!verifiedXUserResponse?.data?.id) {
+          if (!xUserData?.id) {
             return null;
           }
 
@@ -31,21 +36,19 @@ export const xAnalysisRouter = router({
           const [xUserRecord] = await db
             .insert(xUser)
             .values({
-              xUserId: verifiedXUserResponse.data.id,
+              xUserId: xUserData.id,
               xUsername: xUsername,
-              xUrl: verifiedXUserResponse.data.url ?? "",
-              xProfileImageUrl:
-                verifiedXUserResponse.data.profileImageUrl ?? "",
-              xDescription: verifiedXUserResponse.data.description ?? "",
-              xUserCreatedAt: verifiedXUserResponse.data.createdAt ?? "",
+              xUrl: xUserData.url ?? "",
+              xProfileImageUrl: xUserData.profile_image_url ?? "",
+              xDescription: xUserData.description ?? "",
+              xUserCreatedAt: xUserData.created_at ?? "",
             })
             .onConflictDoUpdate({
               target: xUser.xUsername,
               set: {
-                xUrl: verifiedXUserResponse.data.url ?? "",
-                xProfileImageUrl:
-                  verifiedXUserResponse.data.profileImageUrl ?? "",
-                xDescription: verifiedXUserResponse.data.description ?? "",
+                xUrl: xUserData.url ?? "",
+                xProfileImageUrl: xUserData.profile_image_url ?? "",
+                xDescription: xUserData.description ?? "",
                 updatedAt: new Date(),
               },
             })
@@ -64,6 +67,7 @@ export const xAnalysisRouter = router({
             xUserRecord.id,
             xUserRecord.xUserId,
             insertedAnalysisRecord.id,
+            input.maxPosts,
           ]);
 
           return insertedAnalysisRecord.id;

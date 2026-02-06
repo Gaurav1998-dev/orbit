@@ -61,7 +61,7 @@ export function XUsageInfo() {
           <CircleHelp className="h-3 w-3 ml-1.5 cursor-help text-muted-foreground" />
         </TooltipTrigger>
         <TooltipContent className="max-w-xs text-xs">
-          X API Basic plan allows us to retrive up to {project_cap ?? "0"}{" "}
+          X API Basic plan allows us to retrieve up to {project_cap ?? "0"}{" "}
           posts/month. Resets every month.
         </TooltipContent>
       </Tooltip>

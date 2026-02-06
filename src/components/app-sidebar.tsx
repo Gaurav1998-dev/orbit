@@ -54,7 +54,7 @@ export async function AppSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="mt-2">
         <NavMain />
         <NavAnalyses />
       </SidebarContent>

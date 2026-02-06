@@ -55,7 +55,7 @@ export function XHandlesInput() {
         to add and <Kbd>Delete</Kbd> to remove.
       </p>
       <div className="mt-3 space-y-2">
-        <Label htmlFor="max-posts">Number of posts to fetch (each profile)</Label>
+        <Label htmlFor="max-posts">Number of posts to fetch (per profile)</Label>
         <Input
           id="max-posts"
           type="number"

@@ -75,12 +75,14 @@ export function PromptEditorDialog({
             as placeholders for the post data.
           </DialogDescription>
         </DialogHeader>
-        <div className="min-h-0 flex-1 overflow-y-auto py-2">
+        <div className="min-h-0 flex-1 overflow-y-auto p-0.5">
           <Textarea
             value={promptValue}
             onChange={(e) => setPromptValue(e.target.value)}
             className="min-h-[300px] font-mono text-sm"
-            placeholder={isLoading ? "Loading..." : "Enter your analysis prompt..."}
+            placeholder={
+              isLoading ? "Loading..." : "Enter your analysis prompt..."
+            }
             disabled={isLoading || isSaving}
           />
         </div>

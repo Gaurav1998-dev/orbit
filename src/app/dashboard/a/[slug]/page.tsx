@@ -56,6 +56,16 @@ export default function AnalysisPage({ params }: PageProps) {
         </Badge>
       </div>
 
+      {/* Total Posts Analyzed */}
+      {analysis.analysisXPosts.length > 0 && (
+        <div className="text-sm text-muted-foreground">
+          Total posts analyzed:{" "}
+          <span className="font-medium text-foreground">
+            {analysis.analysisXPosts.length.toLocaleString()}
+          </span>
+        </div>
+      )}
+
       {/* Posts Lists */}
       <div className="grid gap-6 md:grid-cols-2">
         <PostsList
@@ -103,6 +113,7 @@ interface Post {
   retweetCount: number | null;
   replyCount: number | null;
   impressionCount: number | null;
+  bookmarkCount: number | null;
   engagementScore: number;
 }
 
@@ -120,10 +131,12 @@ function PostsList({ title, posts }: { title: string; posts: Post[] }) {
             <div key={post.id} className="border-b pb-4 last:border-0">
               <p className="text-sm mb-2">{post.text}</p>
               <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-                <span>❤️ {post.likeCount ?? 0}</span>
-                <span>🔁 {post.retweetCount ?? 0}</span>
-                <span>💬 {post.replyCount ?? 0}</span>
-                <span>👁️ {post.impressionCount ?? 0}</span>
+                <span>❤️ {(post.likeCount ?? 0).toLocaleString()}</span>
+                <span>🔁 {(post.retweetCount ?? 0).toLocaleString()}</span>
+                <span>💬 {(post.replyCount ?? 0).toLocaleString()}</span>
+                <span>🔖 {(post.bookmarkCount ?? 0).toLocaleString()}</span>
+                <span>👁️ {(post.impressionCount ?? 0).toLocaleString()}</span>
+                <span>📊 {(post.engagementScore * 100).toFixed(2)}%</span>
               </div>
             </div>
           ))

@@ -11,9 +11,9 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/lib/trpc";
 import { useQuery } from "@tanstack/react-query";
+import { use } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { use } from "react";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -26,7 +26,11 @@ export default function AnalysisPage({ params }: PageProps) {
     data: analysis,
     isLoading,
     error,
-  } = useQuery(trpc.xAnalysis.getById.queryOptions({ analysisId: slug }));
+  } = useQuery({
+    ...trpc.xAnalysis.getById.queryOptions({ analysisId: slug }),
+    refetchInterval: (query) =>
+      query.state.data?.analysisStage === "completed" ? false : 4000,
+  });
 
   if (isLoading) {
     return <AnalysisSkeleton />;
@@ -42,7 +46,6 @@ export default function AnalysisPage({ params }: PageProps) {
 
   return (
     <div className="flex flex-col gap-6 p-6">
-      {/* Header with X User Info */}
       <div className="flex items-center gap-4">
         <Badge
           variant={
@@ -51,47 +54,6 @@ export default function AnalysisPage({ params }: PageProps) {
         >
           {analysis.analysisStage}
         </Badge>
-      </div>
-
-      {/* Analysis Content */}
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Top 5 Posts Analysis */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Top Performing Posts</CardTitle>
-            <CardDescription>
-              Analysis of your best performing content
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {analysis.top5PostsAnalysis ? (
-              <div className="prose prose-sm dark:prose-invert max-w-none">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{analysis.top5PostsAnalysis}</ReactMarkdown>
-              </div>
-            ) : (
-              <p className="text-muted-foreground">Analysis pending...</p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Bottom 5 Posts Analysis */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Underperforming Posts</CardTitle>
-            <CardDescription>
-              Analysis of content that could be improved
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {analysis.bottom5PostsAnalysis ? (
-              <div className="prose prose-sm dark:prose-invert max-w-none">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{analysis.bottom5PostsAnalysis}</ReactMarkdown>
-              </div>
-            ) : (
-              <p className="text-muted-foreground">Analysis pending...</p>
-            )}
-          </CardContent>
-        </Card>
       </div>
 
       {/* Posts Lists */}
@@ -109,6 +71,26 @@ export default function AnalysisPage({ params }: PageProps) {
             .map((p) => p.post)}
         />
       </div>
+      {/* Analysis Content */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Post Performance Analysis</CardTitle>
+          <CardDescription>
+            Comparative analysis of your top and bottom performing content
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {analysis.text ? (
+            <div className="prose prose-sm dark:prose-invert max-w-none">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {analysis.text}
+              </ReactMarkdown>
+            </div>
+          ) : (
+            <p className="text-muted-foreground">Analysis pending...</p>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -149,19 +149,18 @@ async function analyzeXPosts(
 
   const bottom5XPostRecords = recentXUserPostRecords
     .sort((a, b) => a.engagementScore - b.engagementScore)
+    .filter((post) => !top5XPostRecords.includes(post))
     .slice(0, 5);
 
-  const topPostsAnalysis = await analyzeXPostsWithAI(top5XPostRecords, "top");
-  const bottomPostsAnalysis = await analyzeXPostsWithAI(
+  const postsAnalysis = await analyzeXPostsWithAI(
+    top5XPostRecords,
     bottom5XPostRecords,
-    "bottom",
   );
 
   await db
     .update(analysis)
     .set({
-      top5PostsAnalysis: topPostsAnalysis,
-      bottom5PostsAnalysis: bottomPostsAnalysis,
+      text: postsAnalysis,
       analysisStage: "completed",
     })
     .where(eq(analysis.id, analysisRecordId));

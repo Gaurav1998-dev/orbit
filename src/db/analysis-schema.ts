@@ -17,8 +17,7 @@ export const analysis = pgTable("analysis", {
   xUserFk: text("x_user_fk")
     .notNull()
     .references(() => xUser.id, { onDelete: "cascade" }),
-  top5PostsAnalysis: text("top_5_posts_analysis"),
-  bottom5PostsAnalysis: text("bottom_5_posts_analysis"),
+  text: text("text"),
   analysisStage: analysisStage("analysis_stage"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

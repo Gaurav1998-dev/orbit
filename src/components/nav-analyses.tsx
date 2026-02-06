@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/sidebar";
 import { trpc } from "@/lib/trpc";
 import { useQuery } from "@tanstack/react-query";
+import { Loader2Icon } from "lucide-react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -21,17 +23,39 @@ function formatAnalysisTime(date: Date): string {
   const diffMins = Math.floor(diffMs / 60_000);
   const diffHours = Math.floor(diffMs / 3_600_000);
   const diffDays = Math.floor(diffMs / 86_400_000);
-  if (diffMins < 60) return `${diffMins}m`;
-  if (diffHours < 24) return `${diffHours}h`;
-  if (diffDays < 7) return `${diffDays}d`;
+
+  if (diffMins < 60) {
+    return `${diffMins}m`;
+  }
+  if (diffHours < 24) {
+    return `${diffHours}h`;
+  }
+  if (diffDays < 7) {
+    return `${diffDays}d`;
+  }
+
   return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
 export function NavAnalyses() {
   const pathname = usePathname();
-  const { data: analyses, isLoading } = useQuery(
-    trpc.xAnalysis.list.queryOptions(),
-  );
+
+  // Re-render every 60s to keep relative timestamps fresh
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => setTick((t) => t + 1), 60_000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const { data: analyses, isLoading } = useQuery({
+    ...trpc.xAnalysis.list.queryOptions(),
+    refetchInterval: (query) => {
+      const hasAnyPending = query.state.data?.some(
+        (a) => a.analysisStage === "pending",
+      );
+      return hasAnyPending ? 4000 : false;
+    },
+  });
 
   return (
     <SidebarGroup>
@@ -65,9 +89,13 @@ export function NavAnalyses() {
                     <span className="min-w-0 flex-1 truncate">
                       @{analysis.xUser.xUsername}
                     </span>
-                    <span className="shrink-0 text-xs text-muted-foreground">
-                      {formatAnalysisTime(new Date(analysis.createdAt))}
-                    </span>
+                    {analysis.analysisStage === "pending" ? (
+                      <Loader2Icon className="size-4 shrink-0 animate-spin text-muted-foreground" />
+                    ) : (
+                      <span className="shrink-0 text-xs text-muted-foreground">
+                        {formatAnalysisTime(new Date(analysis.createdAt))}
+                      </span>
+                    )}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

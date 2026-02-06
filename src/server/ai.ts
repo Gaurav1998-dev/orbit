@@ -7,13 +7,13 @@ type XPostRecord = typeof xPost.$inferSelect;
 const model = anthropic("claude-opus-4-5");
 
 export async function analyzeXPostsWithAI(
-  xPostRecords: XPostRecord[],
-  type: "top" | "bottom",
+  topXPostRecords: XPostRecord[],
+  bottomXPostRecords: XPostRecord[],
 ) {
-  // Format posts for better readability in the prompt
-  const formattedPosts = xPostRecords
-    .map(
-      (post, index) => `
+  function formatPosts(posts: XPostRecord[]) {
+    return posts
+      .map(
+        (post, index) => `
   Post ${index + 1}:
   - Text: "${post.text}"
   - Likes: ${post.likeCount}
@@ -25,44 +25,43 @@ export async function analyzeXPostsWithAI(
   - Engagement Score: ${post.engagementScore}
   - Posted: ${post.postCreatedAt}
   `,
-    )
-    .join("\n");
+      )
+      .join("\n");
+  }
+
+  const formattedTopPosts = formatPosts(topXPostRecords);
+  const formattedBottomPosts = formatPosts(bottomXPostRecords);
 
   const { text } = await generateText({
     model,
-    prompt: `You are a social media analytics expert. Analyze these ${type === "top" ? "top-performing" : "lowest-performing"} X (Twitter) posts and identify patterns.
-  
-  ## Posts to Analyze
-  ${formattedPosts}
-  
-  ## Your Task
-  ${
-    type === "top"
-      ? `Identify what made these posts successful. Look for:
-  - Common themes, topics, or subject matter
-  - Writing style patterns (tone, length, structure)
-  - Use of hooks or attention-grabbing openers
-  - Emotional triggers or calls to action
-  - Timing or formatting patterns
-  - Any use of questions, lists, or storytelling`
-      : `Identify what may have caused these posts to underperform. Look for:
-  - Weak or unclear messaging
-  - Topics that didn't resonate
-  - Poor timing or formatting choices
-  - Missing engagement hooks
-  - Overly promotional or generic content
-  - Any patterns in what to avoid`
-  }
-  
-  ## Output Format
-  Provide your analysis in the following structure:
-  
-  1. **Key Patterns** (3-5 bullet points): The most significant patterns you identified
-  2. **Content Themes**: What topics/themes performed ${type === "top" ? "well" : "poorly"}
-  3. **Style Analysis**: Observations about writing style, length, and tone
-  4. **Actionable Recommendations** (3-5 bullet points): Specific, actionable advice for future posts based on this analysis
-  
-  Keep your analysis concise but insightful. Focus on patterns that are actionable.`,
+    prompt: `You are a social media analytics expert. Analyze the following top-performing and underperforming X (Twitter) posts together to identify patterns, contrasts, and actionable insights.
+
+## Top 5 Performing Posts
+${formattedTopPosts}
+
+## Bottom 5 Performing Posts
+${formattedBottomPosts}
+
+## Your Task
+Compare and contrast the top-performing and underperforming posts. Look for:
+- What the top posts did well that the bottom posts lacked
+- Common themes, topics, or subject matter in each group
+- Writing style differences (tone, length, structure)
+- Use of hooks, attention-grabbing openers, or calls to action
+- Patterns in engagement triggers vs. engagement killers
+- Timing or formatting patterns
+
+## Output Format
+Provide your analysis in the following structure:
+
+1. **What's Working** (3-5 bullet points): Key patterns from top-performing posts
+2. **What's Not Working** (3-5 bullet points): Key patterns from underperforming posts
+3. **Key Differences**: The most important contrasts between top and bottom posts
+4. **Content Themes**: What topics/themes resonate vs. fall flat
+5. **Style Analysis**: Observations about writing style, length, and tone across both groups
+6. **Actionable Recommendations** (3-5 bullet points): Specific, actionable advice for future posts based on this comparative analysis
+
+Keep your analysis concise but insightful. Focus on patterns that are actionable.`,
   });
 
   return text;

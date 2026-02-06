@@ -1,3 +1,4 @@
+import { NavAnalyses } from "@/components/nav-analyses";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import {
@@ -55,6 +56,7 @@ export async function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         <NavMain />
+        <NavAnalyses />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

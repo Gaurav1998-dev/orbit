@@ -1,18 +1,19 @@
-import { Hono } from 'hono'
-import { handle } from 'hono/vercel'
-import { trpcServer } from '@hono/trpc-server'
-import { appRouter } from '@/server'
+import { appRouter } from "@/server/routers";
+import { trpcServer } from "@hono/trpc-server";
+import { Hono } from "hono";
+import { handle } from "hono/vercel";
 
-const app = new Hono().basePath('/api')
+const app = new Hono().basePath("/api");
 
-app.get('/hello', (c) => {
-  return c.json({
-    message: 'Hello from Hono!'
-  })
-})
+app.use(
+  "/trpc/*",
+  trpcServer({
+    router: appRouter,
+    onError: (opts) => {
+      console.error(opts.error);
+    },
+  }),
+);
 
-app.use('/trpc/*', trpcServer({
-  router: appRouter,
-}))
-
-export const GET = handle(app)
+export const GET = handle(app);
+export const POST = handle(app);

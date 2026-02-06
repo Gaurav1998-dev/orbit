@@ -1,0 +1,1 @@
+ALTER TABLE "x_post" ALTER COLUMN "engagement_score" SET DATA TYPE double precision;
